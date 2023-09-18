@@ -35,9 +35,31 @@ func (user *User) Offline() {
 	user.server.Broadcast(user, "↓下线")
 }
 
+func (user *User) SendMessage(msg string) {
+	write, err := user.conn.Write([]byte(msg))
+	if err != nil {
+		fmt.Println("发送消息错误,", write)
+		return
+	}
+}
+
 // DoMessage 用户处理消息的业务
 func (user *User) DoMessage(msg string) {
-	user.server.Broadcast(user, msg)
+	//如果当前的查询指令是who,就是想要查询都谁在线
+	if msg == "who" {
+		//查询当前在线用户都有哪些
+		user.server.mapLock.Lock()
+
+		//遍历循环
+		for _, onlineUser := range user.server.OnlineMap {
+			onlineMsg := "[" + onlineUser.Address + "]" + onlineUser.Name + ":" + "在线...\n"
+			user.SendMessage(onlineMsg)
+		}
+
+		user.server.mapLock.Unlock()
+	} else {
+		user.server.Broadcast(user, msg)
+	}
 }
 
 // NewUser 创建一个用户的API

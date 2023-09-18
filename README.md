@@ -31,3 +31,8 @@
 4. 由User处理Message 使用DoMessage
 5. 整合Server和User,冗余的替换掉.
 6. 测试上线,下线,消息的业务(回调函数测试)
+
+##### 查询在线用户列表
+1. 修改user.go添加一个SendMessage消息(单发)
+2. DoMessage 加上"who"指令的处理
+3. 拼装who返回结果的string,回发给当前user
