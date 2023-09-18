@@ -44,3 +44,9 @@
 4. 从server的map里面通过key移除,添加新的key和user(就是改了引用的名字)
 5. 修改自身对象(user)的Name字段
 6. 回显消息给自己
+
+##### 超时强制踢出功能
+1. 在每个用户的handler()的goroutine中,添加用户是否活跃的channel,一旦有消息,就像channel发送消息
+2. 只要用户可度任何的消息,处理完了消息以后,让isLive写一个true
+3. 监听isAlive和定时器的监听. isLive写在上面,只要活跃就不会执行timer,到timer的时候就强制踢出
+4. 
