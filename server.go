@@ -51,6 +51,7 @@ func (server *Server) ListenMessage() {
 	}
 }
 
+// Handler 处理当前用户的业务
 func (server *Server) Handler(conn net.Conn) {
 	//...当前连接的业务
 	fmt.Println("连接建立成功: ", conn)
@@ -64,6 +65,27 @@ func (server *Server) Handler(conn net.Conn) {
 
 	//广播当前用户上线消息
 	server.Broadcast(user, "已上线")
+
+	//接收客户端发送的消息
+	go func() {
+		buf := make([]byte, 4096)
+		for {
+			read, err := conn.Read(buf)
+			if read == 0 {
+				server.Broadcast(user, "下线")
+				return
+			}
+			if err != nil {
+				fmt.Println("Conn read error:", err)
+				return
+			}
+
+			//提取用户的消息,去除用户的\n
+			msg := string(buf[:read-1])
+			//将得到的消息进行广播
+			server.Broadcast(user, msg)
+		}
+	}()
 
 	//当前handler阻塞.
 	select {}
