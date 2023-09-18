@@ -36,3 +36,11 @@
 1. 修改user.go添加一个SendMessage消息(单发)
 2. DoMessage 加上"who"指令的处理
 3. 拼装who返回结果的string,回发给当前user
+
+##### 修改用户名
+1. 在DoMessage中添加else if的处理,满足rename|开头的内容,则视为修改用户名请求
+2. 通过字符串split截取出来要修改的用户名
+3. 判断用户名是否存在,如果存在则直接返回消息说已存在,不进行后续处理.
+4. 从server的map里面通过key移除,添加新的key和user(就是改了引用的名字)
+5. 修改自身对象(user)的Name字段
+6. 回显消息给自己
