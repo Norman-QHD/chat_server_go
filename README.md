@@ -24,3 +24,10 @@
 3. 如果读取到0 客户端合法关闭
 4. 如果是合法消息,把消息拿到,去掉回车再进行一次广播.
 
+##### 做一些封装
+1. 在user中新增server的指针关联.
+2. new User 增加一个server指针的赋值
+3. 增加Online和Offline方法
+4. 由User处理Message 使用DoMessage
+5. 整合Server和User,冗余的替换掉.
+6. 测试上线,下线,消息的业务(回调函数测试)

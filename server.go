@@ -55,16 +55,9 @@ func (server *Server) ListenMessage() {
 func (server *Server) Handler(conn net.Conn) {
 	//...当前连接的业务
 	fmt.Println("连接建立成功: ", conn)
-
 	//创建一个用户对象
-	user := NewUser(conn)
-	//用户上线了,将用户加入到OnlineMap中.
-	server.mapLock.Lock()
-	server.OnlineMap[user.Name] = user
-	server.mapLock.Unlock()
-
-	//广播当前用户上线消息
-	server.Broadcast(user, "已上线")
+	user := NewUser(conn, server)
+	user.Online()
 
 	//接收客户端发送的消息
 	go func() {
@@ -72,7 +65,7 @@ func (server *Server) Handler(conn net.Conn) {
 		for {
 			read, err := conn.Read(buf)
 			if read == 0 {
-				server.Broadcast(user, "下线")
+				user.Offline()
 				return
 			}
 			if err != nil {
@@ -82,8 +75,9 @@ func (server *Server) Handler(conn net.Conn) {
 
 			//提取用户的消息,去除用户的\n
 			msg := string(buf[:read-1])
-			//将得到的消息进行广播
-			server.Broadcast(user, msg)
+
+			//针对msg进行消息处理
+			user.DoMessage(msg)
 		}
 	}()
 
